@@ -1,0 +1,63 @@
+
+acts <- read.csv("UCI HAR Dataset/activity_labels.txt", sep="", header=FALSE)
+dim(acts)
+
+cnames <- read.csv("UCI HAR Dataset/features.txt", sep="", header=FALSE)
+dim(cnames)
+
+# This function loads the x, y, and subject files and cbinds them to create a table
+
+load <- function (xfile, yfile, subjectfile){
+  
+  xtest <- read.csv(xfile, sep="", header=FALSE) 
+  dim(xtest)
+  
+  colnames(xtest) <- cnames[,2]
+  #colnames(xtest)
+  
+  ytest <- read.csv(yfile, sep="", header=FALSE)
+  dim(ytest)
+  #ytest
+  
+  substest <- read.csv(subjectfile, sep="", header=FALSE)
+  dim(substest)
+  #ytest
+  
+  ytestnames <- sapply(ytest[,1], function (x) acts[acts[,1] == x, 2])
+  length(ytestnames)
+  #ytestnames
+  
+  clean <- cbind(subject = substest[,1], activity = ytestnames, xtest)
+  dim(clean)
+  return(clean)
+
+}
+
+# Load the test and training data
+
+testData <- load("UCI HAR Dataset/test/X_test.txt", "UCI HAR Dataset/test/y_test.txt", "UCI HAR Dataset/test/subject_test.txt")
+dim(testData)
+
+trainData <- load("UCI HAR Dataset/train/X_train.txt", "UCI HAR Dataset/train/y_train.txt", "UCI HAR Dataset/train/subject_train.txt")
+dim(trainData)
+
+
+# Combine the test and train data. Keep only "mean" and "std" columns (with "activity" and "subject")
+# Collapse on subject and activity and mean the rest. Write to a file without row names.
+
+allData <- rbind(testData, trainData)
+dim(allData)
+#colnames(allData)
+
+keep <- grep("mean|std", colnames(allData), value=TRUE)
+keep <- append(c("subject", "activity"), keep)
+
+subData <- allData[,keep]
+dim(subData)
+#head(subData)
+
+target <- as.matrix(subData[,3:81])
+tidy <- aggregate(target ~ subject + activity, data=subData, FUN=sum)
+dim(tidy)
+
+write.table(tidy, "tidydata.txt", row.names=FALSE)
