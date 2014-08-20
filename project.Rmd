@@ -76,7 +76,7 @@ dim(subData)
 #head(subData)
 
 target <- as.matrix(subData[,3:81])
-tidy <- aggregate(target ~ subject + activity, data=subData, FUN=sum)
+tidy <- aggregate(target ~ subject + activity, data=subData, FUN=mean)
 dim(tidy)
 
 write.table(tidy, "tidydata.txt", row.names=FALSE)

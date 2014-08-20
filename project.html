@@ -121,10 +121,11 @@ dim(subData)</code></pre>
 <pre class="r"><code>#head(subData)
 
 target &lt;- as.matrix(subData[,3:81])
-tidy &lt;- aggregate(target ~ subject + activity, data=subData, FUN=sum)
+tidy &lt;- aggregate(target ~ subject + activity, data=subData, FUN=mean)
 dim(tidy)</code></pre>
 <pre><code>## [1] 180  81</code></pre>
-<pre class="r"><code>write.table(tidy, &quot;tidydata.csv&quot;, row.names=FALSE)</code></pre>
+<pre class="r"><code>write.table(tidy, &quot;tidydata.txt&quot;, row.names=FALSE)
+write.table(colnames(tidy), &quot;codebook.txt&quot;)</code></pre>
 </div>
 
 
